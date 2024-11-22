@@ -77,7 +77,7 @@ class ClickhouseConnector(SQLConnector):
         with self._engine.connect().execution_options(**kwargs) as conn:
             yield conn
 
-    def _to_sql_type(self, jsonschema_type: dict, is_primary_key: bool) -> sqlalchemy.types.TypeEngine:
+    def to_sql_type(self, jsonschema_type: dict, is_primary_key: bool) -> sqlalchemy.types.TypeEngine:
         """Return a JSON Schema representation of the provided type.
 
         Developers may override this method to accept additional input argument types,
@@ -182,7 +182,7 @@ class ClickhouseConnector(SQLConnector):
             columns.append(
                 Column(
                     property_name,
-                    self._to_sql_type(property_jsonschema, is_primary_key),
+                    self.to_sql_type(property_jsonschema, is_primary_key),
                     primary_key=is_primary_key,
                 ),
             )
