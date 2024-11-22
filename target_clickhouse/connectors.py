@@ -96,18 +96,42 @@ class ClickhouseConnector(SQLConnector):
         # so we need to use the FLOAT type.
         if type(sql_type) == sqlalchemy.types.DECIMAL:
             sql_type = typing.cast(
-                sqlalchemy.types.TypeEngine, sqlalchemy.types.FLOAT(),
+                sqlalchemy.types.TypeEngine,
+                sqlalchemy.types.FLOAT(),
             )
         elif type(sql_type) == sqlalchemy.types.INTEGER:
             sql_type = typing.cast(
-                sqlalchemy.types.TypeEngine, clickhouse_sqlalchemy_types.Int64(),
+                sqlalchemy.types.TypeEngine,
+                clickhouse_sqlalchemy_types.Int64(),
             )
-        elif type(sql_type) == sqlalchemy.types.DATE:
+
+        return sql_type
+
+    def to_sql_type_non_primary_key(
+            self, jsonschema_type: dict,
+    ) -> sqlalchemy.types.TypeEngine:
+        """Return a JSON Schema representation of the provided type.
+
+        To be used when the field is not in the primary key of the table.
+
+        Args:
+            jsonschema_type: The JSON Schema representation of the source type.
+
+        Returns:
+            The SQLAlchemy type representation of the data type.
+
+        """
+        sql_type = self.to_sql_type(jsonschema_type)
+
+        # All date and time types should be flagged as Nullable to allow for NULL value,
+        # as long as the field is not part of the primary key.
+        if type(sql_type) == sqlalchemy.types.DATE:
             sql_type = typing.cast(
                 sqlalchemy.types.TypeEngine,
-                clickhouse_sqlalchemy_types.Nullable(clickhouse_sqlalchemy_types.Date32),
+                clickhouse_sqlalchemy_types.Nullable(
+                    clickhouse_sqlalchemy_types.Date32,
+                ),
             )
-        # All date and time types should be flagged as Nullable to allow for NULL value.
         elif type(sql_type) in [
             sqlalchemy.types.TIMESTAMP,
             sqlalchemy.types.TIME,
@@ -180,7 +204,11 @@ class ClickhouseConnector(SQLConnector):
             columns.append(
                 Column(
                     property_name,
-                    self.to_sql_type(property_jsonschema),
+                    (
+                        self.to_sql_type(property_jsonschema)
+                        if is_primary_key
+                        else self.to_sql_type_non_primary_key(property_jsonschema)
+                    ),
                     primary_key=is_primary_key,
                 ),
             )
