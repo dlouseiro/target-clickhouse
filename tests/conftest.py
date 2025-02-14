@@ -34,10 +34,10 @@ def clickhouse_container():
 
     # Local development setup
     client = docker.from_env()
-    client.images.pull("clickhouse/clickhouse-server", tag="24.10")
+    client.images.pull("clickhouse/clickhouse-server", tag="24.10-alpine")
 
     container = client.containers.run(
-        "clickhouse/clickhouse-server:24.10",
+        "clickhouse/clickhouse-server:24.10-alpine",
         name="clickhouse-server",
         ports={"8123/tcp": 18123, "9000/tcp": 19000},
         ulimits=[docker.types.Ulimit(name="nofile", soft=262144, hard=262144)],
