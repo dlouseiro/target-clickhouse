@@ -36,86 +36,69 @@ plugins:
     - name: sqlalchemy_url
       kind: string
       sensitive: true
-      env: TARGET_CLICKHOUSE_SQLALCHEMY_URL
       description: "The SQLAlchemy connection string for the ClickHouse database."
       documentation: "https://clickhouse.com/docs/en/integrations/sql-clients/sqlalchemy"
     - name: driver
       kind: string
       value: "http"
-      env: TARGET_CLICKHOUSE_DRIVER
       description: "Driver type"
       tooltip: "The type of driver to use for connecting to ClickHouse. Options: http, native, asynch"
     - name: username
       kind: string
       value: "default"
-      env: TARGET_CLICKHOUSE_USERNAME
       description: "Database user"
     - name: password
       kind: string
       sensitive: true
-      env: TARGET_CLICKHOUSE_PASSWORD
       description: "Username password"
     - name: host
       kind: string
       value: "localhost"
-      env: TARGET_CLICKHOUSE_HOST
       description: "Database host"
     - name: port
       kind: integer
       value: 8123
-      env: TARGET_CLICKHOUSE_PORT
       description: "Database connection port"
     - name: database
       kind: string
       value: "default"
-      env: TARGET_CLICKHOUSE_DATABASE
       description: "Database name"
     - name: secure
       kind: boolean
       value: false
-      env: TARGET_CLICKHOUSE_SECURE
       description: "Should the connection be secure"
     - name: verify
       kind: boolean
       value: true
-      env: TARGET_CLICKHOUSE_VERIFY
       description: "Should secure connection need to verify SSL/TLS"
     # Table settings
     - name: table_name
       kind: string
-      env: TARGET_CLICKHOUSE_TABLE_NAME
       description: "The name of the table to write to. Defaults to stream name."
     - name: engine_type
       kind: string
-      env: TARGET_CLICKHOUSE_ENGINE_TYPE
       description: "The engine type to use for the table."
       documentation: "https://clickhouse.com/docs/en/engines/table-engines"
     - name: table_path
       kind: string
-      env: TARGET_CLICKHOUSE_TABLE_PATH
       description: "The table path for replicated tables. Required when using replication engines."
       documentation: "https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/replication"
     - name: replica_name
       kind: string
-      env: TARGET_CLICKHOUSE_REPLICA_NAME
       description: "The replica_name for replicated tables. Required when using replication engines."
     - name: cluster_name
       kind: string
-      env: TARGET_CLICKHOUSE_CLUSTER_NAME
       description: "The cluster to create tables in. Used for the clickhouse_cluster argument."
       documentation: "https://clickhouse.com/docs/en/sql-reference/distributed-ddl"
     - name: default_target_schema
       kind: string
-      env: TARGET_CLICKHOUSE_DEFAULT_TARGET_SCHEMA
       description: "The default target database schema name to use for all streams."
     - name: optimize_after
       kind: boolean
       value: false
-      env: TARGET_CLICKHOUSE_OPTIMIZE_AFTER
       description: "Run 'OPTIMIZE TABLE' after data insert. Useful when table engine removes duplicate rows."
       documentation: "https://clickhouse.com/docs/en/sql-reference/statements/optimize"
     - name: order_by_keys
       kind: array
-      env: TARGET_CLICKHOUSE_ORDER_BY_KEYS
       description: "List of columns to order by. Used for engines that require ordering."
       documentation: "https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/mergetree#mergetree-query-clauses"
