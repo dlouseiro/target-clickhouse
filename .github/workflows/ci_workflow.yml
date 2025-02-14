@@ -27,9 +27,11 @@ jobs:
       run: |
         poetry install
 
-    - name: Run lint command from tox.ini
+    - name: Run linting
       run: |
-        poetry run tox -e lint
+        poetry run ruff check .
+        poetry run ruff format --check .
+        poetry run mypy .
 
   pytest:
     runs-on: ubuntu-latest
