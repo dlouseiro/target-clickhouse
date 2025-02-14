@@ -8,24 +8,27 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
-      timezone: "America/New_York"
+      interval: "weekly"
+      timezone: "Europe/Amsterdam"
       time: "09:00"
+      day: "monday"
     reviewers:
-      - "btheunissen"
+      - "dlouseiro"
   - package-ecosystem: "pip"
     directory: "/.github/workflows"
     schedule:
-      interval: "daily"
-      timezone: "America/New_York"
+      interval: "weekly"
+      timezone: "Europe/Amsterdam"
       time: "09:00"
+      day: "monday"
     reviewers:
-      - "btheunissen"
+      - "dlouseiro"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-      timezone: "America/New_York"
+      timezone: "Europe/Amsterdam"
       time: "09:00"
+      day: "monday"
     reviewers:
-      - "btheunissen"
+      - "dlouseiro"
