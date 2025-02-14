@@ -11,11 +11,28 @@ pytest_plugins = ()
 
 @pytest.fixture(scope="session")
 def clickhouse_container():
-    """Create a ClickHouse container for testing."""
+    """
+    Create a ClickHouse container for testing.
+
+    In CI, this fixture is a no-op since ClickHouse is provided via GitHub Actions
+    services.
+    """
+    import os
     import time
 
     import requests
 
+    # Skip container creation if we're in GitHub Actions
+    if os.getenv("GITHUB_ACTIONS"):
+        # Just wait for the service to be ready
+        while (
+            requests.get("http://localhost:18123/ping", timeout=1).text.strip() != "Ok."
+        ):
+            time.sleep(1)
+        yield None
+        return
+
+    # Local development setup
     client = docker.from_env()
     client.images.pull("clickhouse/clickhouse-server", tag="latest")
 
