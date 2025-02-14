@@ -27,11 +27,9 @@ jobs:
       run: |
         poetry install
 
-    - name: Run linting
+    - name: Run pre-commit
       run: |
-        poetry run ruff check .
-        poetry run ruff format --check .
-        poetry run mypy .
+        poetry run pre-commit run --all-files
 
   pytest:
     runs-on: ubuntu-latest

@@ -23,12 +23,6 @@ pendulum = "~=3.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "~=3.6.2"
-ruff = "~=0.2.1"
-mypy = "~=1.8.0"
-types-setuptools = "~=75.8.0"
-types-requests = "~=2.32.0"
-types-jsonschema = "~=4.23.0"
-types-simplejson = "~=3.19.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "~=8.0.2"
@@ -40,61 +34,7 @@ requests = "~=2.31.0"
 [tool.poetry.extras]
 s3 = ["fs-s3fs"]
 
-[tool.ruff]
-src = ["target_clickhouse"]
-target-version = "py310"
 
-[tool.ruff.lint]
-ignore = [
-    "ANN001", # missing-return-type
-    "ANN101",  # missing-type-self
-    "ANN102",  # missing-type-cls
-    "ANN201",  # missing-return-type-doc
-    "ANN202",  # missing-return-type-doc
-    "D100",   # Missing docstring in public module
-    "D101",   # Missing docstring in public class
-    "D103",   # Missing docstring in public function
-    "D203",   # one-blank-line-before-class (conflicts with D211)
-    "D212",   # multi-line-summary-first-line (conflicts with D213)
-    "D401",   # First line should be in imperative mood
-    "D407",   # Missing dashed underline after section
-    "FA100",  # Forbidden import
-    "S101",   # Use of assert detected
-    "G004",   # Logging statement uses string formatting
-    "TCH002", # Type checker related
-    "TCH003", # Type checker related
-    "C901",   # Too complex
-    "TRY201", # Use of bare 'except'
-    "COM812", # Conflicts with formatter
-    "ISC001", # Conflicts with formatter
-]
-select = ["ALL"]
-
-[tool.ruff.lint.flake8-annotations]
-allow-star-arg-any = true
-
-[tool.ruff.lint.isort]
-known-first-party = ["target_clickhouse"]
-
-[tool.ruff.lint.pylint]
-max-args = 6
-
-[tool.mypy]
-strict = true
-warn_return_any = true
-warn_unused_configs = true
-
-[[tool.mypy.overrides]]
-module = ["target_clickhouse.*", "tests.*"]
-disable_error_code = [
-    "name-defined",
-    "no-untyped-def",
-    "no-untyped-call",
-    "type-arg",
-    "misc",
-    "no-any-return"
-]
-ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core>=1.8.8"]

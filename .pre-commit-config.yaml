@@ -35,3 +35,11 @@ repos:
     - types-simplejson
     - types-setuptools
     language_version: python3.10
+    args:
+    - --disable-error-code=name-defined
+    - --disable-error-code=no-untyped-def
+    - --disable-error-code=no-untyped-call
+    - --disable-error-code=type-arg
+    - --disable-error-code=misc
+    - --disable-error-code=no-any-return
+    - --ignore-missing-imports
