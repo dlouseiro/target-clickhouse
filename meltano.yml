@@ -30,7 +30,7 @@ plugins:
     - stream-maps
     - record-flattening
     config:
-      sqlalchemy_url: 'clickhouse+http://default:@localhost:18123'
+      sqlalchemy_url: 'clickhouse+http://default:@localhost:18123/'
     settings:
     # Connection settings
     - name: sqlalchemy_url
