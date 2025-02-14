@@ -25,6 +25,10 @@ pendulum = "~=3.0.0"
 pre-commit = "~=3.6.2"
 ruff = "~=0.2.1"
 mypy = "~=1.8.0"
+types-setuptools = "~=75.8.0"
+types-requests = "~=2.32.0"
+types-jsonschema = "~=4.23.0"
+types-simplejson = "~=3.19.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "~=8.0.2"
@@ -75,8 +79,21 @@ known-first-party = ["target_clickhouse"]
 [tool.ruff.lint.pylint]
 max-args = 6
 
+[tool.mypy]
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
 [[tool.mypy.overrides]]
-disable_error_code = ["name-defined"]
+module = ["target_clickhouse.*", "tests.*"]
+disable_error_code = [
+    "name-defined",
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "misc",
+    "no-any-return"
+]
 ignore_missing_imports = true
 
 [build-system]
