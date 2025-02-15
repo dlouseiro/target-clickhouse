@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-import pytest
 from singer_sdk.testing.templates import TargetFileTestTemplate
 
 pytest_plugins = ()
