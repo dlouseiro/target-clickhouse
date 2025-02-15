@@ -50,6 +50,18 @@ cd target-clickhouse
 poetry install --all-extras
 ```
 
+### Testing
+
+The test suite includes tests for core functionality and validation. Before running tests, start the ClickHouse container:
+
+```bash
+# Start ClickHouse container
+./docker_run_clickhouse.sh
+
+# Run all tests
+poetry run pytest
+```
+
 ## Configuration
 
 ### Connection Settings
@@ -194,15 +206,6 @@ plugins:
 - `ReplicatedAggregatingMergeTree`
 
 For more information about ClickHouse table engines, refer to the [official documentation](https://clickhouse.com/docs/en/engines/table-engines).
-
-### Testing
-
-The test suite includes tests for core functionality and validation. The test environment is automatically set up and torn down as needed.
-
-```bash
-# Run all tests
-poetry run pytest
-```
 
 ### Code Quality
 
