@@ -1,0 +1,6 @@
+{"type": "SCHEMA", "stream": "stream_1", "schema": {"properties": {"id": {"type": "integer"}, "timestamp": {"type": "string", "format": "date-time"}}, "type": "object"}, "key_properties": ["id"]}
+{"type": "RECORD", "stream": "stream_1", "record": {"id": 1, "timestamp": "2024-02-15T12:00:00Z"}}
+{"type": "STATE", "value": {"bookmarks": {"stream_1": {"timestamp": "2024-02-15T12:00:00Z"}}}}
+{"type": "SCHEMA", "stream": "stream_2", "schema": {"properties": {"id": {"type": "integer"}, "updated_at": {"type": "string", "format": "date-time"}}, "type": "object"}, "key_properties": ["id"]}
+{"type": "RECORD", "stream": "stream_2", "record": {"id": 1, "updated_at": "2024-02-15T12:00:00Z"}}
+{"type": "STATE", "value": {"bookmarks": {"stream_2": {"updated_at": "2024-02-15T12:00:00Z"}}}}

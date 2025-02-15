@@ -144,6 +144,37 @@ plugins:
         sqlalchemy_url: "clickhouse+http://default:@localhost:8123/my_database"
 ```
 
+### Stream-specific Configuration
+
+You can configure `engine_type` and `order_by_keys` at both the target level (applies to all streams) and at the stream level (applies to specific streams). Stream-level configuration takes precedence over target-level configuration. For example:
+
+```yaml
+plugins:
+  loaders:
+    - name: target-clickhouse
+      config:
+        sqlalchemy_url: "clickhouse+http://default:@localhost:8123/my_database"
+        # Target-level defaults (applied to all streams unless overridden)
+        engine_type: "MergeTree" # Default engine for all tables
+        order_by_keys: ["id"] # Default ordering for all tables
+
+        # Stream-specific configuration
+        stream_configs:
+          users:
+            engine_type: "ReplacingMergeTree" # Override engine for users table
+            order_by_keys: ["updated_at"] # Override ordering for users table
+          events:
+            order_by_keys: ["timestamp"] # Only override ordering for events table
+```
+
+Configuration priority:
+
+1. Stream-specific configuration (`stream_configs[stream_name]`)
+2. Target-level configuration
+3. Default values (`MergeTree` engine, no ordering)
+
+This allows you to set sensible defaults at the target level while customizing specific streams as needed.
+
 ### Using MergeTree Engine
 
 Example configuration using the MergeTree engine with ordering:

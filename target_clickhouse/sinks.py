@@ -31,6 +31,45 @@ class ClickhouseSink(SQLSink):
 
     connector_class = ClickhouseConnector
 
+    def get_stream_config(self, stream_name: str, key: str, default: Any = None) -> Any:
+        """
+        Get a stream-specific configuration value.
+
+        Args:
+            stream_name: The name of the stream.
+            key: The key to get from the configuration.
+            default: The default value to return if the key is not found.
+
+        Returns:
+            The value from stream config or target config, or the default if not found.
+
+        """
+        stream_configs = self.config.get("stream_configs", {})
+        stream_config = stream_configs.get(stream_name, {})
+        return stream_config.get(key) or self.config.get(key) or default
+
+    def get_engine_type(self) -> str:
+        """
+        Get the engine type for the current stream.
+
+        Returns
+            The engine type to use.
+
+        """
+        return self.get_stream_config(
+            self.stream_name, "engine_type", SupportedEngines.MERGE_TREE
+        )
+
+    def get_order_by_keys(self) -> list[str] | None:
+        """
+        Get the order by keys for the current stream.
+
+        Returns
+            The order by keys to use, or None if not specified.
+
+        """
+        return self.get_stream_config(self.stream_name, "order_by_keys")
+
     @property
     def full_table_name(self) -> str:
         """

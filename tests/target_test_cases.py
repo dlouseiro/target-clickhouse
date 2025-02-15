@@ -113,10 +113,42 @@ class TestPrimaryKeyNotMaterialized(TargetClickhouseFileTestTemplate):
         assert "ORDER BY id" in create_table_ddl, "Expected ORDER BY id in table DDL"
 
 
+class TestStreamMapConfig(TargetClickhouseFileTestTemplate):
+    """Test that stream map configuration works correctly for engine_type and order_by_keys."""
+
+    name = "stream_map_config"
+
+    def validate(self) -> None:
+        """Validate the table structure in ClickHouse."""
+        connector = TestConnector(self.target.config)
+
+        # Check stream_1 configuration (uses target engine with stream-specific ordering)
+        create_table_ddl_1 = connector.get_table_ddl("stream_1")
+        assert (
+            "ENGINE = ReplacingMergeTree" in create_table_ddl_1
+        ), "Expected target-level ReplacingMergeTree engine for stream_1"
+        assert (
+            "ORDER BY timestamp" in create_table_ddl_1
+        ), "Expected stream-specific ORDER BY timestamp for stream_1"
+
+        # Check stream_2 configuration (stream-specific engine with target ordering)
+        create_table_ddl_2 = connector.get_table_ddl("stream_2")
+        assert (
+            "ENGINE = MergeTree" in create_table_ddl_2
+        ), "Expected stream-specific MergeTree engine for stream_2"
+        assert (
+            "ORDER BY id" in create_table_ddl_2
+        ), "Expected target-level ORDER BY id for stream_2"
+
+
 # Combined test suite with all test cases
 custom_target_test_suite = TestSuite(
     kind="target",
-    tests=[TestDateTypeTargetClickhouse, TestPrimaryKeyMaterialized],
+    tests=[
+        TestDateTypeTargetClickhouse,
+        TestPrimaryKeyMaterialized,
+        TestStreamMapConfig,
+    ],
 )
 
 # Combined test suite with non-materialized primary keys config.

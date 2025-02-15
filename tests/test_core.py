@@ -39,6 +39,29 @@ TEST_CONFIG_NATIVE: dict[str, t.Any] = {
     "verify": False,
 }
 
+TEST_CONFIG_STREAM_MAPS: dict[str, t.Any] = {
+    "driver": "http",
+    "host": "localhost",
+    "port": 18123,
+    "username": "default",
+    "password": "",
+    "database": "default",
+    "secure": False,
+    "verify": False,
+    # Target-level defaults
+    "engine_type": "ReplacingMergeTree",
+    "order_by_keys": ["id"],
+    # Stream-specific overrides
+    "stream_configs": {
+        "stream_1": {
+            "order_by_keys": ["timestamp"]  # Uses target-level engine_type
+        },
+        "stream_2": {
+            "engine_type": "MergeTree"  # Override engine but use target-level order_by
+        },
+    },
+}
+
 TEST_CONFIG_NON_MATERIALIZED_PRIMARY_KEYS: dict[str, t.Any] = {
     "driver": "http",
     "host": "localhost",
@@ -87,3 +110,14 @@ class TestNonMaterializedPrimaryKeysTargetClickhouse(
     NonMaterializedPrimaryKeysTargetTests  # type: ignore[valid-type]
 ):
     """Standard Target Tests."""
+
+
+StreamMapTargetTests = get_target_test_class(
+    target_class=TargetClickhouse,
+    config=TEST_CONFIG_STREAM_MAPS,
+    custom_suites=[custom_target_test_suite],
+)
+
+
+class TestStreamMapTargetClickhouse(StreamMapTargetTests):  # type: ignore[valid-type]
+    """Stream Map Configuration Tests."""

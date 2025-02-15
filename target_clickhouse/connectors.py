@@ -195,11 +195,8 @@ class ClickhouseConnector(SQLConnector):
         columns: list[Column] = []
         primary_keys = primary_keys or []
 
-        # If config engine type is set, then use it instead of the default engine type.
-        if self.config.get("engine_type"):
-            engine_type = self.config.get("engine_type")
-        else:
-            engine_type = SupportedEngines.MERGE_TREE
+        # Get engine type from sink (which handles stream maps and target config)
+        engine_type = self.sink.get_config("engine_type", SupportedEngines.MERGE_TREE)
 
         try:
             properties: dict = schema["properties"]
@@ -225,7 +222,7 @@ class ClickhouseConnector(SQLConnector):
             primary_keys=primary_keys,
             table_name=table_name,
             config=self.config,
-            order_by_keys=self.config.get("order_by_keys"),
+            order_by_keys=self.sink.get_config("order_by_keys"),
         )
 
         table_args = {}
