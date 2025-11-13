@@ -8,7 +8,6 @@ from typing import Any, Iterable
 import jsonschema.exceptions as jsonschema_exceptions
 import simplejson as json
 import sqlalchemy
-from pendulum import now
 from singer_sdk.helpers._compat import (
     date_fromisoformat,
     datetime_fromisoformat,
