@@ -20,7 +20,6 @@ from singer_sdk.helpers._typing import (
     handle_invalid_timestamp_in_record,
 )
 from singer_sdk.sinks import SQLSink
-from sqlalchemy.sql.expression import bindparam
 
 from target_clickhouse.connectors import ClickhouseConnector
 
@@ -92,19 +91,12 @@ class ClickhouseSink(SQLSink):
 
         return res
 
-    def activate_version(self, new_version: int) -> None:
-        """Bump the active version of the target table.
-
-        Args:
-            new_version: The version number to activate.
-
-        """
+    def activate_version(self) -> None:
+        """Bump the active version of the target table."""
         # There's nothing to do if the table doesn't exist yet
         # (which it won't the first time the stream is processed)
         if not self.connector.table_exists(self.full_table_name):
             return
-
-        deleted_at = now()
 
         if not self.connector.column_exists(
             full_table_name=self.full_table_name,
