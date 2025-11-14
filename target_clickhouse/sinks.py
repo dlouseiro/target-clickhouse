@@ -116,7 +116,8 @@ class ClickhouseSink(SQLSink):
                 sql_type=sqlalchemy.types.Integer(),
             )
 
-        if self.config.get("hard_delete", True):
+        if (self.config.get("hard_delete", True)
+                and self.config.get("load_method", "not-append-only") != "append-only"):
             with self.connector._connect() as conn, conn.begin():  # noqa: SLF001
                 conn.execute(
                     sqlalchemy.text(
@@ -136,18 +137,21 @@ class ClickhouseSink(SQLSink):
                 sql_type=sqlalchemy.types.DateTime(),
             )
 
-        query = sqlalchemy.text(
-            f"ALTER TABLE {self.full_table_name} \n"
-            f"UPDATE {self.soft_delete_column_name} = :deletedate \n"
-            f"WHERE {self.version_column_name} < :version \n"
-            f"  AND {self.soft_delete_column_name} IS NULL\n",
-        )
-        query = query.bindparams(
-            bindparam("deletedate", value=deleted_at, type_=sqlalchemy.types.DateTime),
-            bindparam("version", value=new_version, type_=sqlalchemy.types.Integer),
-        )
-        with self.connector._connect() as conn, conn.begin():  # noqa: SLF001
-            conn.execute(query)
+        if self.config.get("load_method", "not-append-only") != "append-only":
+            query = sqlalchemy.text(
+                f"ALTER TABLE {self.full_table_name} \n"
+                f"UPDATE {self.soft_delete_column_name} = :deletedate \n"
+                f"WHERE {self.version_column_name} < :version \n"
+                f"  AND {self.soft_delete_column_name} IS NULL\n",
+            )
+            query = query.bindparams(
+                bindparam("deletedate", value=deleted_at,
+                          type_=sqlalchemy.types.DateTime),
+                bindparam("version", value=new_version,
+                          type_=sqlalchemy.types.Integer),
+            )
+            with self.connector._connect() as conn, conn.begin():  # noqa: SLF001
+                conn.execute(query)
 
     def _validate_and_parse(self, record: dict) -> dict:
         """Pre-validate and repair records for string type mismatches, then validate.
