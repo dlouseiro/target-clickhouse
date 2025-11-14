@@ -8,6 +8,7 @@ from typing import Any, Iterable
 import jsonschema.exceptions as jsonschema_exceptions
 import simplejson as json
 import sqlalchemy
+from pendulum import now
 from singer_sdk.helpers._compat import (
     date_fromisoformat,
     datetime_fromisoformat,
@@ -19,6 +20,7 @@ from singer_sdk.helpers._typing import (
     handle_invalid_timestamp_in_record,
 )
 from singer_sdk.sinks import SQLSink
+from sqlalchemy.sql.expression import bindparam
 
 from target_clickhouse.connectors import ClickhouseConnector
 
@@ -102,6 +104,8 @@ class ClickhouseSink(SQLSink):
         if not self.connector.table_exists(self.full_table_name):
             return
 
+        deleted_at = now()
+
         if not self.connector.column_exists(
             full_table_name=self.full_table_name,
             column_name=self.version_column_name,
@@ -112,6 +116,17 @@ class ClickhouseSink(SQLSink):
                 sql_type=sqlalchemy.types.Integer(),
             )
 
+        if (self.config.get("hard_delete", True)
+                and self.config.get("load_method", "not-append-only") != "append-only"):
+            with self.connector._connect() as conn, conn.begin():  # noqa: SLF001
+                conn.execute(
+                    sqlalchemy.text(
+                        f"ALTER TABLE {self.full_table_name} DELETE "
+                        f"WHERE {self.version_column_name} <= {new_version}",
+                    ),
+                )
+            return
+
         if not self.connector.column_exists(
             full_table_name=self.full_table_name,
             column_name=self.soft_delete_column_name,
@@ -121,6 +136,22 @@ class ClickhouseSink(SQLSink):
                 self.soft_delete_column_name,
                 sql_type=sqlalchemy.types.DateTime(),
             )
+
+        if self.config.get("load_method", "not-append-only") != "append-only":
+            query = sqlalchemy.text(
+                f"ALTER TABLE {self.full_table_name} \n"
+                f"UPDATE {self.soft_delete_column_name} = :deletedate \n"
+                f"WHERE {self.version_column_name} < :version \n"
+                f"  AND {self.soft_delete_column_name} IS NULL\n",
+            )
+            query = query.bindparams(
+                bindparam("deletedate", value=deleted_at,
+                          type_=sqlalchemy.types.DateTime),
+                bindparam("version", value=new_version,
+                          type_=sqlalchemy.types.Integer),
+            )
+            with self.connector._connect() as conn, conn.begin():  # noqa: SLF001
+                conn.execute(query)
 
     def _validate_and_parse(self, record: dict) -> dict:
         """Pre-validate and repair records for string type mismatches, then validate.
